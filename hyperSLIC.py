@@ -57,8 +57,8 @@ class SLIC():
         self.dot_data = data.data
         self.image = self.data.T.sum()
         
-        self.width = data.axes_manager[0].size
-        self.height = data.axes_manager[1].size
+        self.width = data.axes_manager[1].size
+        self.height = data.axes_manager[0].size
         self.channels = data.axes_manager[2].size
         self.mode = mode
         self.k = k
