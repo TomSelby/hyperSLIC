@@ -52,28 +52,45 @@ def wheat_from_chaff(data, percentile,mode):
 
 ## Script start
 
-path = r'D:\Dropbox (Cambridge University)\tas72@cam.ac.uk’s_files\Data_Backup\Halide_segregation\SED\Sample_3A_centered'
+path = r'D:\Dropbox (Cambridge University)\tas72@cam.ac.uk’s_files\Data_Backup\mg32809\SED\Rice_4_1'
 os.chdir(path)
 errors = []
-dirc_list = glob.glob('*.zspy')[16:]
-constant = 6
+dirc_list = ['.\\20230426_202847\\20230426_202847_calibrated_data_bin2.hspy',
+ '.\\20230426_203050\\20230426_203050_calibrated_data_bin2.hspy',
+ '.\\20230426_203304\\20230426_203304_calibrated_data_bin2.hspy',
+ '.\\20230426_203519\\20230426_203519_calibrated_data_bin2.hspy',
+ '.\\20230426_203731\\20230426_203731_calibrated_data_bin2.hspy',
+ '.\\20230426_203940\\20230426_203940_calibrated_data_bin2.hspy',
+ '.\\20230426_204145\\20230426_204145_calibrated_data_bin2.hspy',
+ '.\\20230426_204357\\20230426_204357_calibrated_data_bin2.hspy',
+ '.\\20230426_204731\\20230426_204731_calibrated_data_bin2.hspy']
+constant = 15
+seed_num = 300 
+m = 1
+search_space = 1
+iteration_number = 20
+percent_wheat = 95
+
 for dirc in dirc_list:
     try:
+        
         print(dirc)
         s = hs.load(dirc,lazy=True)
-        s = s.rebin(scale=[1,1,2,2])
+        s.data = s.data.astype('float32')
+
+        #s = s.rebin(scale=[1,1,2,2])
         s.compute()
         
 
         s.isig[(s.axes_manager[2].size//2)-constant:(s.axes_manager[2].size//2)+constant,(s.axes_manager[3].size//2)-constant:(s.axes_manager[3].size//2)+constant] = 0#np.zeros((constant*2,constant*2))
         raveled = np.reshape(s.data, (s.axes_manager[1].size, s.axes_manager[0].size,s.axes_manager[2].size*s.axes_manager[3].size))
-        wheat = wheat_from_chaff(raveled,98,'range')
+        wheat = wheat_from_chaff(raveled,percent_wheat,'range')
         print('Complete', np.shape(wheat))
         wheat_hs = hs.signals.Signal1D(wheat)
-        test = hyperSLIC.SLIC(wheat_hs,'regular',700,0.8,1) # seed_num, m, searchspace
+        test = hyperSLIC.SLIC(wheat_hs,'regular',seed_num,m,search_space) # seed_num, m, searchspace
         summed = s.T.sum().data
         t0 = time.time()
-        for i in tqdm(range(10)):
+        for i in tqdm(range(iteration_number)):
 
             test.find_closest_centeroid()
             test.update_centeroids()
@@ -117,40 +134,45 @@ for dirc in dirc_list:
                     pass
         print('Clusters combined')
         #Reload s without masking direct beam
+#         del s
+#         gc.collect()
+#         s = hs.load(dirc,lazy=True)
+#         s.data = s.data.astype('float32')
+#         #s.compute()
         
-        s = hs.load(dirc,lazy=True)
-        s.compute()
-        
-        summed_patterns = np.zeros((test.k,np.shape(s.inav[0,0].data)[0],np.shape(s.inav[0,0].data)[1]),dtype = 'float32')
+#         summed_patterns = np.zeros((test.k,np.shape(s.inav[0,0].data)[0],np.shape(s.inav[0,0].data)[1]),dtype = 'float32')
 
-        number_of_occurances = np.zeros(test.k)
+#         number_of_occurances = np.zeros(test.k)
 
 
-        for row in tqdm(range(np.shape(test.closest_centeroid)[0])):
-            for col in range(np.shape(test.closest_centeroid)[1]):
+#         for row in tqdm(range(np.shape(test.closest_centeroid)[0])):
+#             for col in range(np.shape(test.closest_centeroid)[1]):
 
-                arg = int(updated_centroids[row,col])
-                number_of_occurances[arg] += 1 
-                pattern = s.data[row,col].astype(np.float32)# Use the copy not the data with the masked bright feild
-                summed_patterns[arg] += pattern
+#                 arg = int(updated_centroids[row,col])
+#                 number_of_occurances[arg] += 1 
+#                 pattern = s.data[row,col].astype(np.float32)# Use the copy not the data with the masked bright feild
+#                 summed_patterns[arg] += pattern
 
-        print('Patterns summed')
-        mean_patterns = np.zeros_like(summed_patterns)
-        for i in tqdm(range(len(mean_patterns))):
-            occurances = number_of_occurances[i]
-            if occurances == 0:
-                mean_patterns[i] = np.zeros((256,256))
-            else:
-                mean_patterns[i] = summed_patterns[i]/number_of_occurances[i]
+#         print('Patterns summed')
+#         mean_patterns = np.zeros_like(summed_patterns)
+#         for i in tqdm(range(len(mean_patterns))):
+#             occurances = number_of_occurances[i]
+#             if occurances == 0:
+#                 mean_patterns[i] = np.zeros((256,256))
+#             else:
+#                 mean_patterns[i] = summed_patterns[i]/number_of_occurances[i]
         
         
-        np.save(f'{dirc[:-5]}_mean_cluster_patterns',mean_patterns)
+#         np.save(f'{dirc[:-5]}_mean_cluster_patterns',mean_patterns)
         np.save(f'{dirc[:-5]}_clusters',updated_centroids)
         print(f'{dirc}_mean_cluster_patterns and {dirc}_clusters saved')
         del s
         gc.collect()
     except Exception as e: 
         print('##################################################')
+        del s
+        gc.collect()
+        
         print(e)
         print('##################################################')
         errors.append([dirc])

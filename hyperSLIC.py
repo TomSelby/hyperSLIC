@@ -43,11 +43,9 @@ def find_new_centeroid(channel_len, coords,dot_data,shape_coords):
         channels = dot_data[coords[0][i],coords[1][i]]
         sum_channels += channels
    
-    #print(f'Coords: {coords}')
     mean_x = np.mean(coords[0])
     mean_y = np.mean(coords[1])
     mean_channels = sum_channels/shape_coords
-    #print(f'Mean x: {mean_x}, Mean y: {mean_y}')
     return (mean_x, mean_y, mean_channels)
                             
 class SLIC():
@@ -56,7 +54,6 @@ class SLIC():
         self.data = data
         self.dot_data = data.data
         self.image = self.data.T.sum()
-        
         self.width = data.axes_manager[1].size
         self.height = data.axes_manager[0].size
         self.channels = data.axes_manager[2].size
@@ -85,6 +82,12 @@ class SLIC():
             for seed_x in seeds:
                 for seed_y in seeds:
                     seed_positions.append((seed_x,seed_y))
+        elif self.mode == 'semi':
+            seeds = [(self.est_domain_size+(x*self.est_domain_size)) for x in range(self.num_each_side)]
+            seed_positions = []
+            for seed_x in seeds:
+                for seed_y in seeds:
+                    seed_positions.append((seed_x+np.random.randint(-2,2),seed_y+np.random.randint(-2,2)))
         channel_positions = []
         
         for seed in seed_positions: # for initial channel position just take the value at the x/y initialised x/y value
@@ -95,7 +98,7 @@ class SLIC():
         
     
     def find_closest_centeroid(self):    
-        closest_centeroid = np.zeros((self.width,self.height)) #initalise array of current closest centeroids
+        closest_centeroid = np.zeros((self.width,self.height),dtype=int) #initalise array of current closest centeroids
         distances_arr = np.zeros((self.width,self.height))+np.inf     
         
         
@@ -132,22 +135,13 @@ class SLIC():
         
             
                    
-    def update_centeroids(self):      
-        
-        reversed_counters = np.flip(np.array([x for x in range(len(self.xy_centeroids))]))
-        
-        for counter in range(len(self.xy_centeroids)):
-     
-            
-            
-            
+    def update_centeroids(self):             
+        for counter in range(len(self.xy_centeroids)):            
             coords = np.where(self.closest_centeroid == counter)
             if np.shape(coords)[1] == 0:
                 self.xy_centeroids[counter] = self.initial_xy_centeroids[counter]
                 self.channel_centeroids[counter] = self.initial_channel_centeroids[counter]
             else:
-                
-                
                 (mean_x,mean_y, mean_channels) = find_new_centeroid(self.channels, coords,self.dot_data,np.shape(coords)[1])
                 ## Update
                 self.xy_centeroids[counter] = (mean_x,mean_y) 
