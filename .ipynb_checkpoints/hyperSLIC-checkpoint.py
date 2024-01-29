@@ -6,7 +6,7 @@ import numba as nb
 
 @jit(nopython=True)
 def pythag_d(x1,y1,x2,y2):
-    d = np.sqrt(((x1-x2)**2) + ((y1-y2)**2))
+    d = ((x1-x2)**2) + ((y1-y2)**2) #don't sqrt here as square later on anyway
     return d
 @jit(nopython=True)
 def calc_channel_dist(current_channels,centeroid_channels):
@@ -16,21 +16,23 @@ def calc_channel_dist(current_channels,centeroid_channels):
     return distance_channels
 @jit(nopython=True)
 def calc_total_dist(distance_channels,distance_x_y,dom_size,m):
-    total_dist = np.sqrt(distance_channels + ((distance_x_y/dom_size)**2)*(m**2))
+    #total_dist = np.sqrt(distance_channels + (distance_x_y/dom_size)*(m))
+    total_dist = distance_channels + (distance_x_y/dom_size)*(m)
     #total_dist = np.sqrt((distance_channels/m)**2+(distance_x_y/dom_size)**2)
     return total_dist
 
 @njit(parallel=True)
 def distance_to_cent_oi(vasinity_data,centeroid_xy,centeroid_channels,row_lb,col_lb, dom_size, m):
     distance_to_centeroid_oi = np.zeros_like(vasinity_data[:,:,0])
-    
+    squared_dom_size  = dom_size**2
+    squared_m = m**2
     for i in prange(np.shape(distance_to_centeroid_oi)[0]): # cover entire vasinity data
-        for j in prange(np.shape(distance_to_centeroid_oi)[1]):
+        for j in range(np.shape(distance_to_centeroid_oi)[1]):
             
             distance_x_y = pythag_d(centeroid_xy[0],centeroid_xy[1],i+row_lb,j+col_lb)
             current_channels = vasinity_data[i,j]                   
             distance_channels = calc_channel_dist(current_channels,centeroid_channels)
-            distance_to_centeroid_oi[i,j] = calc_total_dist(distance_channels,distance_x_y,dom_size,m)
+            distance_to_centeroid_oi[i,j] = calc_total_dist(distance_channels,distance_x_y,squared_dom_size,squared_m) # square dom size here rarther than in function
             
     return distance_to_centeroid_oi
                             
@@ -87,7 +89,7 @@ class SLIC():
             seed_positions = []
             for seed_x in seeds:
                 for seed_y in seeds:
-                    seed_positions.append((seed_x+np.random.randint(-2,2),seed_y+np.random.randint(-2,2)))
+                    seed_positions.append((seed_x+np.random.randint(-1,1),seed_y+np.random.randint(-1,1)))
         channel_positions = []
         
         for seed in seed_positions: # for initial channel position just take the value at the x/y initialised x/y value
