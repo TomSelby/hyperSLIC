@@ -7,6 +7,19 @@ The SLIC notebook gives an example of how the package is applied to a scanning e
 ```python
 import hyperSLIC
 ```
+Separate the 'wheat' from the 'chaff'
+```python
+wheat = wheat_from_chaff(raveled,98,'range')
+```
+Make a hyperSLIC object
+```python
+test = hyperSLIC.SLIC(wheat_hs,method,cluster_number,m_value,searchspace)
+```
+Run the clustering in a loop
+```python
+test.find_closest_centeroid()
+test.update_centeroids()
+```
 
 ## Contributing
 
