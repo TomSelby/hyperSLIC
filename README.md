@@ -3,7 +3,7 @@
 HyperSLIC is an adaptation of the simple linear iterative clustering (SLIC) algorithm widely used on remote sensing images for the clustering of high-dimensional microscopy datasets.
 
 ## Usage
-The SLIC notebook gives an example of how the package is applied to a scanning electron diffraction (SED) dataset.
+The ```SLIC.ipynb``` notebook gives an example of how the package is applied to a scanning electron diffraction (SED) dataset.
 ```python
 import hyperSLIC
 ```
