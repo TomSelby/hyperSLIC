@@ -21,7 +21,7 @@ test.find_closest_centeroid()
 test.update_centeroids()
 ```
 ## Demo
-Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on use, including expected runtime and output. An example scanning electron diffraction (SED) dataset found in [/data](https://pages.github.com/)```
+Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on use, including expected runtime and outputs. An example scanning electron diffraction (SED) dataset found in [/data](https://pages.github.com/)
 ## Contributing
 
 Feel free to raise an issue if you experience issues or wish to see new functionality implemented.
