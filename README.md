@@ -29,7 +29,7 @@ test.update_centeroids()
 Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on use, including expected runtime and outputs. An example scanning electron diffraction (SED) dataset found in [/data](https://pages.github.com/)
 ## Contributing
 
-Feel free to raise an issue if you experience issues or wish to see new functionality implemented.
+Feel free to raise an issue if you experience problems or wish to see new functionality implemented.
 
 ## References
 1. Y. Shi, W. Wang, Q. Gong and D. Li, The Journal of Engineering, 2019, 2019, 6675–6679. (https://doi.org/10.1049/joe.2019.0240)
