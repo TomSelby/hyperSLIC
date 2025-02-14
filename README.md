@@ -3,6 +3,11 @@
 HyperSLIC is an adaptation of the simple linear iterative clustering (SLIC) algorithm widely used on remote sensing images for the clustering of high-dimensional microscopy datasets.
 ## Installation and Dependancies
 ### Python Dependancies
+hyperSLIC is largely built upon [pyxem](https://pyxem.readthedocs.io/en/stable/index.html) and [hyperspy](https://hyperspy.org/hyperspy-doc/current/index.html)
+pip installing pyxem will provide both of these:
+```python
+pip install pyxem
+```
 ## Usage
 ```python
 import hyperSLIC
