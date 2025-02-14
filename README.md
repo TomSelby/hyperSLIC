@@ -26,9 +26,8 @@ test.find_closest_centeroid()
 test.update_centeroids()
 ```
 ## Demo
-Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on use, including expected runtime and outputs. An example scanning electron diffraction (SED) dataset found in [hyperSLIC/data](https://pages.github.com/)
+Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on use, including expected runtime and outputs. An example scanning electron diffraction (SED) dataset found in [hyperSLIC/data](https://github.com/TomSelby/hyperSLIC/tree/main/data)
 ## Contributing
-
 Feel free to raise an issue if you experience problems or wish to see new functionality implemented.
 
 ## References
