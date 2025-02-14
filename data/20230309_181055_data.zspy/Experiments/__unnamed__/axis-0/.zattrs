@@ -1,0 +1,9 @@
+{
+    "_type": "UniformDataAxis",
+    "is_binned": false,
+    "navigate": true,
+    "offset": 187.0,
+    "scale": 5.237411574638708e-09,
+    "size": 255,
+    "units": "nm"
+}

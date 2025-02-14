@@ -1,0 +1,8 @@
+{
+    "exposure_time": 0.001,
+    "flip": true,
+    "frames_number_skipped": 187,
+    "record_by": "image",
+    "scan_X": 256,
+    "signal_type": "electron_diffraction"
+}
