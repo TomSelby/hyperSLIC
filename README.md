@@ -1,13 +1,13 @@
 # HyperSLIC
 
 HyperSLIC is an adaptation of the simple linear iterative clustering (SLIC) algorithm widely used on remote sensing images for the clustering of high-dimensional microscopy datasets.
-
+## Installation and Dependancies
+### Python Dependancies
 ## Usage
-The ```SLIC.ipynb``` notebook gives an example of how the package is applied to a scanning electron diffraction (SED) dataset.
 ```python
 import hyperSLIC
 ```
-Separate the 'wheat' from the 'chaff'
+Separate the 'wheat' from the 'chaff' given a certain threshold of the dynamic range or variance.
 ```python
 wheat = wheat_from_chaff(raveled,98,'range')
 ```
@@ -20,10 +20,9 @@ Run the clustering in a loop
 test.find_closest_centeroid()
 test.update_centeroids()
 ```
-
+## Demo
+Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on use, including expected runtime and output. An example scanning electron diffraction (SED) dataset found in [/data](https://pages.github.com/)```
 ## Contributing
-
-We're happy for users to use the code on their own data however please keep this repo and results confidential until publication of the algorithm (should be soon).
 
 Feel free to raise an issue if you experience issues or wish to see new functionality implemented.
 
