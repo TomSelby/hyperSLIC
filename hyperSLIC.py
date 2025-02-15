@@ -6,7 +6,7 @@ import numba as nb
 
 @jit(nopython=True)
 def pythag_d(x1,y1,x2,y2):
-    d = ((x1-x2)**2) + ((y1-y2)**2) #don't sqrt here as square later on anyway
+    d = np.sqrt(((x1-x2)**2) + ((y1-y2)**2))
     return d
 @jit(nopython=True)
 def calc_channel_dist(current_channels,centeroid_channels):
@@ -16,23 +16,21 @@ def calc_channel_dist(current_channels,centeroid_channels):
     return distance_channels
 @jit(nopython=True)
 def calc_total_dist(distance_channels,distance_x_y,dom_size,m):
-    #total_dist = np.sqrt(distance_channels + (distance_x_y/dom_size)*(m))
-    total_dist = distance_channels + (distance_x_y/dom_size)*(m)
+    total_dist = np.sqrt(distance_channels + ((distance_x_y/dom_size)**2)*(m**2))
     #total_dist = np.sqrt((distance_channels/m)**2+(distance_x_y/dom_size)**2)
     return total_dist
 
 @njit(parallel=True)
 def distance_to_cent_oi(vasinity_data,centeroid_xy,centeroid_channels,row_lb,col_lb, dom_size, m):
     distance_to_centeroid_oi = np.zeros_like(vasinity_data[:,:,0])
-    squared_dom_size  = dom_size**2
-    squared_m = m**2
+    
     for i in prange(np.shape(distance_to_centeroid_oi)[0]): # cover entire vasinity data
-        for j in range(np.shape(distance_to_centeroid_oi)[1]):
+        for j in prange(np.shape(distance_to_centeroid_oi)[1]):
             
             distance_x_y = pythag_d(centeroid_xy[0],centeroid_xy[1],i+row_lb,j+col_lb)
             current_channels = vasinity_data[i,j]                   
             distance_channels = calc_channel_dist(current_channels,centeroid_channels)
-            distance_to_centeroid_oi[i,j] = calc_total_dist(distance_channels,distance_x_y,squared_dom_size,squared_m) # square dom size here rarther than in function
+            distance_to_centeroid_oi[i,j] = calc_total_dist(distance_channels,distance_x_y,dom_size,m)
             
     return distance_to_centeroid_oi
                             
@@ -45,17 +43,37 @@ def find_new_centeroid(channel_len, coords,dot_data,shape_coords):
         channels = dot_data[coords[0][i],coords[1][i]]
         sum_channels += channels
    
+    #print(f'Coords: {coords}')
     mean_x = np.mean(coords[0])
     mean_y = np.mean(coords[1])
     mean_channels = sum_channels/shape_coords
+    #print(f'Mean x: {mean_x}, Mean y: {mean_y}')
     return (mean_x, mean_y, mean_channels)
                             
 class SLIC():
     def __init__(self,data,mode,k,m,search_space):
-        '''Initialise the data defines the height, width and number of channels in the data then defines the starting grid based off the number of clusters (k). Mode is random default regular, search_space is how much to find distances beyond S, classically this is 2'''
+        '''Initialise the hyperSLIC object
+        
+        Parameters
+        ----------
+        data: hyperspy Signal1D object
+        The data you wish to cluster as a hyperspy object
+        
+        mode: {'regular', 'random', 'semi'}
+        How to seed centeroids throughout your data in the navigation space. Either as a regular grid ('regular'); randomly ('random'), or semi-regular ('semi') where centroid positions are slightly randomly deviated from a regular grid.
+
+        k: int 
+        The number of centroids you wish to seed throughout the data. If mode == 'random' this number is exact if mode == 'regular' or 'semi' the closest square number is used.
+        m: float
+        The weighting factor for the importance of channel and spatial distances.
+
+        search_space: float
+        The amount to extend or confine the search space each centroid explores compared to the expected size of each cluster if the data was split equally between all centroids. 
+    '''
         self.data = data
         self.dot_data = data.data
         self.image = self.data.T.sum()
+        
         self.width = data.axes_manager[1].size
         self.height = data.axes_manager[0].size
         self.channels = data.axes_manager[2].size
@@ -84,12 +102,6 @@ class SLIC():
             for seed_x in seeds:
                 for seed_y in seeds:
                     seed_positions.append((seed_x,seed_y))
-        elif self.mode == 'semi':
-            seeds = [(self.est_domain_size+(x*self.est_domain_size)) for x in range(self.num_each_side)]
-            seed_positions = []
-            for seed_x in seeds:
-                for seed_y in seeds:
-                    seed_positions.append((seed_x+np.random.randint(-1,1),seed_y+np.random.randint(-1,1)))
         channel_positions = []
         
         for seed in seed_positions: # for initial channel position just take the value at the x/y initialised x/y value
@@ -100,7 +112,7 @@ class SLIC():
         
     
     def find_closest_centeroid(self):    
-        closest_centeroid = np.zeros((self.width,self.height),dtype=int) #initalise array of current closest centeroids
+        closest_centeroid = np.zeros((self.width,self.height)) #initalise array of current closest centeroids
         distances_arr = np.zeros((self.width,self.height))+np.inf     
         
         
@@ -137,13 +149,22 @@ class SLIC():
         
             
                    
-    def update_centeroids(self):             
-        for counter in range(len(self.xy_centeroids)):            
+    def update_centeroids(self):      
+        
+        
+        for counter in range(len(self.xy_centeroids)):
+     
+            
+            
+            
             coords = np.where(self.closest_centeroid == counter)
             if np.shape(coords)[1] == 0:
                 self.xy_centeroids[counter] = self.initial_xy_centeroids[counter]
                 self.channel_centeroids[counter] = self.initial_channel_centeroids[counter]
+                continue
             else:
+                
+                
                 (mean_x,mean_y, mean_channels) = find_new_centeroid(self.channels, coords,self.dot_data,np.shape(coords)[1])
                 ## Update
                 self.xy_centeroids[counter] = (mean_x,mean_y) 
