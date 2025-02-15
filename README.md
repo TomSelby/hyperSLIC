@@ -4,7 +4,7 @@ HyperSLIC is an adaptation of the simple linear iterative clustering (SLIC) algo
 ## Installation and Dependancies
 ### Python Dependancies
 hyperSLIC is largely built upon [pyxem](https://pyxem.readthedocs.io/en/stable/index.html) and [hyperspy](https://hyperspy.org/hyperspy-doc/current/index.html),
-pip installing pyxem should provide both of these:
+pip installing pyxem should provide both of these and all other requirements:
 ```
 pip install pyxem
 ```
