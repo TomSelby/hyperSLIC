@@ -31,5 +31,5 @@ Please follow the ```demo.ipynb``` jupyter notebook for detailed instructions on
 Feel free to raise an issue if you experience problems or wish to see new functionality implemented.
 
 ## References
-1. Y. Shi, W. Wang, Q. Gong and D. Li, The Journal of Engineering, 2019, 2019, 6675–6679. (https://doi.org/10.1049/joe.2019.0240)
-2. R. Achanta, A. Shaji, K. Smith, A. Lucchi, P. Fua and S. Süsstrunk, IEEE Trans Pattern Anal Mach Intell, 2012, 34, 2274–2282. (https://doi.org/10.1109/TPAMI.2012.120)
+1. Y. Shi, W. Wang, Q. Gong and D. Li, The Journal of Engineering, 2019, 2019, 6675–6679. https://doi.org/10.1049/joe.2019.0240
+2. R. Achanta, A. Shaji, K. Smith, A. Lucchi, P. Fua and S. Süsstrunk, IEEE Trans Pattern Anal Mach Intell, 2012, 34, 2274–2282. https://doi.org/10.1109/TPAMI.2012.120
