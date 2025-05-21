@@ -1,5 +1,5 @@
 # HyperSLIC
-![][https://github.com/TomSelby/hyperSLIC/blob/main/iterations.gif]
+![me](https://github.com/TomSelby/hyperSLIC/blob/main/iterations.gif)
 
 HyperSLIC is an adaptation of the simple linear iterative clustering (SLIC) algorithm widely used on remote sensing images for the clustering of high-dimensional microscopy datasets.
 ## Installation and Dependancies
